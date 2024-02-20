@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
@@ -27,5 +28,17 @@ public class ServiceApiImpl implements ServiceApi{
         ResponseEntity<Characters> response = template.exchange(CHARACTER_API, HttpMethod.GET, entity, Characters.class);
 
         return response.getBody();
+    }
+
+    @Override
+    public Characters getCharactersByPageNumber(String page) {
+        String uriString = UriComponentsBuilder.fromHttpUrl(CHARACTER_API)
+                .queryParam("page", page)
+                .toUriString(); // формируется строка URI с помощью UriComponentsBuilder, добавляя параметр "page" с переданным значением.
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON)); // устанавливаются заголовки запроса (Accept: application/json)
+        HttpEntity<String > stringHttpEntity = new HttpEntity<>(headers);
+        ResponseEntity<Characters> charactersResponseEntity = template.exchange(uriString, HttpMethod.GET,
+                stringHttpEntity, Characters.class); // запрос к API
+        return  charactersResponseEntity.getBody();
     }
 }

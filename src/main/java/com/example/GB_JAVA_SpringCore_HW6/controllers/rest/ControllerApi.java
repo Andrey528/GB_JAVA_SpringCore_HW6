@@ -6,10 +6,8 @@ import com.example.GB_JAVA_SpringCore_HW6.services.ServiceApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.util.StringUtils;
 
 import java.util.Optional;
 
@@ -27,8 +25,10 @@ public class ControllerApi {
     }
 
     @GetMapping("/character/{id}")
-    public ResponseEntity<Result> getCharacterById(@PathVariable Integer id) {
-        Characters allCharacters = serviceApi.getAllCharacters();
+    public ResponseEntity<Result> getCharacterById(@PathVariable Integer id, @RequestParam(required = false) String page) {
+        System.out.println(page);
+        Characters allCharacters = StringUtils.isEmpty(page) ? serviceApi.getAllCharacters() :
+                serviceApi.getCharactersByPageNumber(page);
         Optional<Result> character = allCharacters.getResults().stream()
                 .filter(c -> c.getId().equals(id))
                 .findFirst();
